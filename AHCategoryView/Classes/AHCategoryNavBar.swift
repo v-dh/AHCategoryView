@@ -357,7 +357,7 @@ fileprivate extension AHCategoryNavBar {
         let font = UIFont.systemFont(ofSize: barStyle.fontSize)
         let height: CGFloat = self.bounds.height // certain
         let boundSize = CGSize(width: CGFloat(Float.greatestFiniteMagnitude), height: height)
-        let textWidth = (label.text! as NSString).boundingRect(with: boundSize, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil).width
+        let textWidth = (label.text! as NSString).boundingRect(with: boundSize, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: font], context: nil).width
         
         return textWidth
     }
