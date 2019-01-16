@@ -79,7 +79,7 @@ public class AHCategoryNavBar: UIView {
         }
         
     }
-
+    
     public override var frame: CGRect {
         didSet {
             if !barStyle.isEmbeddedToView && frame != .zero && isSetup == false {
@@ -93,7 +93,7 @@ public class AHCategoryNavBar: UIView {
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     
     public func setItem(item: AHCategoryItem, for index:Int) {
         guard index >= 0 && index < categories.count else {
@@ -121,7 +121,7 @@ public class AHCategoryNavBar: UIView {
         }
         
         let btn = buttons[index]
-
+        
         if let badgeInfo = badgeDict[index]{
             badgeInfo.numberOfBadge = numberOfBadge
             addBadgeToBtn(btn: btn, badgeInfo: badgeInfo)
@@ -171,7 +171,7 @@ public class AHCategoryNavBar: UIView {
         
         let badgeLabel = UILabel()
         badgeLabel.textAlignment = .center
-
+        
         
         if badgeInfo.numberOfBadge == 1 {
             let dotSize = CGSize(width: 10.0, height: 10.0)
@@ -220,7 +220,7 @@ fileprivate extension AHCategoryNavBar {
         addButtons()
         setupIndicator()
         setupBgMaskView()
-
+        
     }
     func setupBottomSeparator() {
         guard barStyle.showBottomSeparator else {
@@ -314,7 +314,7 @@ fileprivate extension AHCategoryNavBar {
             buttons.append(btn)
             
             scrollView.addSubview(btn)
-
+            
             let contentWidth:CGFloat = buttons.last!.frame.maxX + barStyle.interItemSpace * 0.5
             let contentHeight:CGFloat = self.bounds.height
             scrollView.contentSize = CGSize(width: contentWidth, height: contentHeight)
@@ -357,7 +357,7 @@ fileprivate extension AHCategoryNavBar {
         let font = UIFont.systemFont(ofSize: barStyle.fontSize)
         let height: CGFloat = self.bounds.height // certain
         let boundSize = CGSize(width: CGFloat(Float.greatestFiniteMagnitude), height: height)
-        let textWidth = (label.text! as NSString).boundingRect(with: boundSize, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: font], context: nil).width
+        let textWidth = (label.text! as NSString).boundingRect(with: boundSize, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil).width
         
         return textWidth
     }
@@ -464,7 +464,7 @@ extension AHCategoryNavBar: AHCategoryContainerDelegate {
         guard toIndex < buttons.count else {
             return
         }
-
+        
         let currentBtn = buttons[toIndex]
         
         handleBtnSwitching(currentBtn: currentBtn)
@@ -476,7 +476,7 @@ extension AHCategoryNavBar: AHCategoryContainerDelegate {
         previousButton = currentBtn
     }
     
-     public func categoryContainer(_ container: UIView, transitioningFromIndex fromIndex:Int, toIndex:Int, progress: CGFloat) {
+    public func categoryContainer(_ container: UIView, transitioningFromIndex fromIndex:Int, toIndex:Int, progress: CGFloat) {
         guard barStyle.showTransitionAnimation else {
             return
         }
@@ -546,10 +546,10 @@ extension AHCategoryNavBar: AHCategoryContainerDelegate {
         
         let deltaWidth = (toWidth - fromWidth) * progress
         let deltaX = (toBtn.center.x - fromBtn.center.x) * progress
-
+        
         let width = fromWidth + deltaWidth + 2 * edgeMargin
         let x = fromBtn.center.x + deltaX
-       
+        
         self.bgMaskView.frame.size.width = width
         self.bgMaskView.center.x = x
         

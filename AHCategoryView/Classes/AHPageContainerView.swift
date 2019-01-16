@@ -15,14 +15,14 @@ private enum AHCurrentScrollDirection{
 
 
 class AHPageContainerView: UIView {
-
+    
     var interControllerSpacing: CGFloat = 0.0
     
     var childVCs: [UIViewController]
     weak var delegate: AHCategoryContainerDelegate?
     weak var parentVC: UIViewController!
     
-    fileprivate lazy var pageVC: UIPageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey: self.interControllerSpacing])
+    fileprivate lazy var pageVC: UIPageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: [UIPageViewController.OptionsKey.interPageSpacing: self.interControllerSpacing])
     
     fileprivate weak var pageScrollView: UIScrollView?
     fileprivate weak var pageControl: UIPageControl?
@@ -52,7 +52,7 @@ class AHPageContainerView: UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     
     func setupPageVC(){
         
@@ -72,9 +72,9 @@ class AHPageContainerView: UIView {
         self.backgroundColor = UIColor.clear
         pageVC.view.frame = CGRect(x: 0, y: 0, width: self.bounds.width, height: self.bounds.height + 37.0)
         
-        pageVC.willMove(toParentViewController: self.parentVC)
-        self.parentVC.addChildViewController(pageVC)
-        pageVC.didMove(toParentViewController: self.parentVC)
+        pageVC.willMove(toParent: self.parentVC)
+        self.parentVC.addChild(pageVC)
+        pageVC.didMove(toParent: self.parentVC)
         pageVC.view.willMove(toSuperview: self)
         addSubview(pageVC.view)
         pageVC.view.didMoveToSuperview()
@@ -88,7 +88,7 @@ class AHPageContainerView: UIView {
         super.layoutSubviews()
         
     }
-
+    
 }
 
 extension AHPageContainerView: UIScrollViewDelegate {
@@ -103,22 +103,22 @@ extension AHPageContainerView: UIScrollViewDelegate {
         }
         /*
          The current visible vcontroller is always
-            at (self.bounds.width + interControllerSpacing, 0)
-                or in this code, (controllerWidth, 0)
+         at (self.bounds.width + interControllerSpacing, 0)
+         or in this code, (controllerWidth, 0)
          
          when scrolling to left, contentOffset.x is within [controllerWidth, controllerWidth * 2];
          when scrolling to right, contentOffset.x is within [0, controllerWidth];
          
          So the current visible controller is always at the middle of the scrollView
- 
-        */
-//        print("width:\(controllerWidth) offset:\(scrollView.contentOffset)")
+         
+         */
+        //        print("width:\(controllerWidth) offset:\(scrollView.contentOffset)")
         
         
         var fromIndex: Int = 0
         var toIndex: Int = 0
-        let progress: CGFloat = fabs(scrollView.contentOffset.x - self.controllerWidth) /  self.controllerWidth
-
+        let progress: CGFloat = abs(scrollView.contentOffset.x - self.controllerWidth) /  self.controllerWidth
+        
         
         if scrollView.contentOffset.x == self.controllerWidth {
             // this condition will be satisfied once, for both failed transition cases when scrolling left or scrolling right. And it will result to contentOffset.x == self.controllerWidth. Do nothing, instead of figuring out which case it is for this current call.
@@ -146,7 +146,7 @@ extension AHPageContainerView: UIScrollViewDelegate {
         }
         
         currentIndex = fromIndex
-
+        
         delegate?.categoryContainer(self, transitioningFromIndex: fromIndex, toIndex: toIndex, progress: progress)
         
     }
@@ -163,11 +163,11 @@ extension AHPageContainerView: UIPageViewControllerDelegate{
         guard let index = childVCs.index(of: vc) else {return}
         willTransitionToIndex = index
         currentDirection = nil
-
+        
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-
+        
         guard let willTransitionToIndex = willTransitionToIndex else { return }
         
         if completed {
@@ -178,13 +178,13 @@ extension AHPageContainerView: UIPageViewControllerDelegate{
         // nil every time after the delegate
         self.willTransitionToIndex = nil
     }
-
     
-
+    
+    
     func pageViewControllerSupportedInterfaceOrientations(_ pageViewController: UIPageViewController) -> UIInterfaceOrientationMask {
         return UIInterfaceOrientationMask.portrait
     }
-
+    
     func pageViewControllerPreferredInterfaceOrientationForPresentation(_ pageViewController: UIPageViewController) -> UIInterfaceOrientation {
         return UIInterfaceOrientation.portrait
     }
@@ -193,7 +193,7 @@ extension AHPageContainerView: UIPageViewControllerDelegate{
 
 
 extension AHPageContainerView: UIPageViewControllerDataSource {
-
+    
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController?{
         
         
@@ -205,7 +205,7 @@ extension AHPageContainerView: UIPageViewControllerDataSource {
         return childVCs[index - 1]
         
     }
-
+    
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         
         guard let index = childVCs.index(of: viewController), index + 1 < childVCs.count else {
@@ -214,7 +214,7 @@ extension AHPageContainerView: UIPageViewControllerDataSource {
         
         return childVCs[index + 1]
     }
-
+    
     func presentationCount(for pageViewController: UIPageViewController) -> Int{
         return childVCs.count
     }
@@ -231,13 +231,13 @@ extension AHPageContainerView: AHCategoryNavBarDelegate {
         guard toIndex >= 0 && toIndex < childVCs.count else { return }
         guard toIndex != currentIndex else { return }
         
-        let direction: UIPageViewControllerNavigationDirection = (toIndex > currentIndex) ? .forward : .reverse
+        let direction: UIPageViewController.NavigationDirection = (toIndex > currentIndex) ? .forward : .reverse
         
         let vc = childVCs[toIndex]
         pageVC.setViewControllers([vc], direction: direction, animated: true) { (_) in
             self.currentIndex = toIndex
         }
-
+        
     }
 }
 
